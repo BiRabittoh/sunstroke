@@ -36,19 +36,21 @@ def handle_links(name, links):
         con = Pyload()
         return [ download_link(con, name, link) for link in links ]
     except URLError:
-        print("Connessione a Pyload rifiutata.")
+        print("\nConnessione a Pyload rifiutata.")
 
     print("Link da aggiungere manualmente:\n")
-    for x in links:
-        print(x)
-    print()
+    print("\n".join(links))
+    print("")
     return []
 
 def main():
     newspapers = get_newspaper(NEWSPAPER_PREFIX, 0) # 0 -> today
-    name = NEWSPAPER_PREFIX + datetime.today().strftime("%Y-%m-%d")
+    name = f"{NEWSPAPER_PREFIX} - {datetime.today().strftime('%Y-%m-%d')}"
     links = get_sorted_links(newspapers)
     pids = handle_links(name, links)
+    print(len(pids), "link aggiunti a Pyload.")
+    print("Premi INVIO per uscire.")
+    input()
 
 if __name__ == "__main__":
     exit(main())
