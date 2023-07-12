@@ -1,4 +1,5 @@
 __pycache__
 venv
+.env
 rss.xml
 session.txt

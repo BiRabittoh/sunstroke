@@ -1,11 +1,14 @@
-import feedparser
 from html.parser import HTMLParser
 from datetime import datetime
 from re import compile
+import os
+import feedparser
+from dotenv import load_dotenv
+load_dotenv()
 
-N_LINKS_TO_REMOVE = 2
+RSS_URL = os.getenv("RSS_URL") or os.path.join(".", "rss.xml")
+N_LINKS_TO_REMOVE = os.getenv("N_LINKS_TO_REMOVE") or 2
 REGEX_DATE = compile("\(([\d\.]*)\)")
-OVERPOST_URL = "https://overpost.biz/e-books/quotidiani/rss.xml"
 
 def add_or_update(dictionary, key, value):
     try:
@@ -48,29 +51,30 @@ def parse_html(html):
     parser.feed(html)
     return parser.get_links()
 
-def remove_first(d):
+def dict_pop(d):
     return (k := next(iter(d)), d.pop(k))
 
-def remove_first_n(d, n):
-    for i in range(n):
-        remove_first(d)
+def dict_pop_first_n(d, n):
+    return [dict_pop(d) for _ in range(n)]
 
 def parse_entry(entry): # entry = day
     date = REGEX_DATE.findall(entry.title)[0]
     links = parse_html(entry.turbo_content)
     
-    remove_first_n(links, N_LINKS_TO_REMOVE)
+    dict_pop_first_n(links, int(N_LINKS_TO_REMOVE))
     return (datetime.strptime(date, "%d.%m.%Y"), links)
 
 def get_links(rss_url):
     feed = feedparser.parse(rss_url)
     return [ parse_entry(entry) for entry in feed.entries ]
 
-def get_sole():
-    links = get_links(OVERPOST_URL)
-    today = links[1]
-    return { k: v for k, v in today[1].items() if k.startswith("Il Sole 24 Ore")}
+def get_newspaper(prefix="", index=0):
+    links = get_links(RSS_URL)
+    try:
+        daily = links[index][1]
+    except IndexError:
+        return {}
+    return { k: v for k, v in daily.items() if k.startswith(prefix)}
 
-OVERPOST_URL = r"/home/marco/Documenti/overpost/rss.xml"
 if __name__ == "__main__":
-    print(get_sole())
+    print(get_newspaper("Il Sole"))
