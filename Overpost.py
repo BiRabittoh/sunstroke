@@ -69,10 +69,11 @@ def get_links(rss_url):
     return [ parse_entry(entry) for entry in feed.entries ]
 
 def get_newspaper(prefix="", index=0):
-    links = get_links(RSS_URL)
+    all_links = get_links(RSS_URL)
     try:
-        daily = links[index][1]
+        daily = all_links[index][1]
     except IndexError:
+        print("Empty feed.")
         return {}
     return { k: v for k, v in daily.items() if k.startswith(prefix)}
 
