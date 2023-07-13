@@ -28,8 +28,7 @@ def filter_links(links, hosts):
         if get_host(link) == host:
             return link
     return filter_links(links, hosts)
-        
-        
+
 def get_sorted_links(dictionary):
     hosts = scroll_list(HOST_PREFERENCE)
     return [ filter_links(links, hosts) for _, links in dictionary.items() ]
