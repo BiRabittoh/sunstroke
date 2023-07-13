@@ -3,9 +3,7 @@ from datetime import datetime
 from re import compile
 import os
 import feedparser
-from dotenv import load_dotenv
 from MyResolver import get
-load_dotenv()
 
 RSS_URL = os.getenv("RSS_URL") or os.path.join(".", "rss.xml")
 N_LINKS_TO_REMOVE = os.getenv("N_LINKS_TO_REMOVE") or 2
@@ -67,7 +65,7 @@ def parse_entry(entry): # entry = day
 
 def handle_url(url):
     if url.startswith("http"):
-        return get(url)
+        return get(url).text
     else:
         return url
 

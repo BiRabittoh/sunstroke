@@ -5,7 +5,7 @@ class HostHeaderSSLAdapter(requests.adapters.HTTPAdapter):
         import random
         ips = [
             '104.16.89.20',  # CloudFlare
-            '151.101.2.109',  # Fastly
+            #'151.101.2.109',  # Fastly
         ]
         resolutions = {
             'overpost.biz': random.choice(ips),

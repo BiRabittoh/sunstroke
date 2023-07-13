@@ -1,8 +1,11 @@
+
+from urllib.error import URLError
+from datetime import datetime
+from os import getenv
+from dotenv import load_dotenv
+load_dotenv()
 from Overpost import get_newspaper
 from MyPyload import Pyload
-from urllib.error import URLError
-from os import getenv
-from datetime import datetime
 
 NEWSPAPER_PREFIX = getenv("NEWSPAPER_PREFIX") or ""
 HOST_PREFERENCE = [ 'katfile.com', 'rapidgator.net', 'www.easybytez.com' ]
@@ -19,14 +22,18 @@ def scroll_list(array, buffer=1000):
 def get_host(link):
     return link.split("/")[2]
 
-def filter_links(links, host):
+def filter_links(links, hosts):
+    host = next(hosts)
     for link in links:
+        print(link, host)
         if get_host(link) == host:
             return link
+    return filter_links(links, hosts)
+        
         
 def get_sorted_links(dictionary):
     hosts = scroll_list(HOST_PREFERENCE)
-    return [ filter_links(links, next(hosts)) for _, links in dictionary.items() ]
+    return [ filter_links(links, hosts) for _, links in dictionary.items() ]
 
 def download_link(connection, name, link):
     return connection.addPackage(name=name, links=[link])
@@ -38,9 +45,10 @@ def handle_links(name, links):
     except URLError:
         print("\nConnessione a Pyload rifiutata.")
 
-    print("Link da aggiungere manualmente:\n")
-    print("\n".join(links))
-    print("")
+    print(len(links), "link da aggiungere manualmente:\n")
+    for link in links:
+        print(link)
+    print()
     return []
 
 def main():
