@@ -25,7 +25,6 @@ def get_host(link):
 def filter_links(links, hosts):
     host = next(hosts)
     for link in links:
-        print(link, host)
         if get_host(link) == host:
             return link
     return filter_links(links, hosts)
