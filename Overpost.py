@@ -4,6 +4,7 @@ from re import compile
 import os
 import feedparser
 from dotenv import load_dotenv
+from MyResolver import get
 load_dotenv()
 
 RSS_URL = os.getenv("RSS_URL") or os.path.join(".", "rss.xml")
@@ -64,8 +65,14 @@ def parse_entry(entry): # entry = day
     dict_pop_first_n(links, int(N_LINKS_TO_REMOVE))
     return (datetime.strptime(date, "%d.%m.%Y"), links)
 
+def handle_url(url):
+    if url.startswith("http"):
+        return get(url)
+    else:
+        return url
+
 def get_links(rss_url):
-    feed = feedparser.parse(rss_url)
+    feed = feedparser.parse(handle_url(rss_url))
     return [ parse_entry(entry) for entry in feed.entries ]
 
 def get_newspaper(prefix="", index=0):
